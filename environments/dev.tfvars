@@ -1,16 +1,15 @@
 # Development Environment Configuration
-# Required
 owner_email = "your-email@company.com"
 environment = "dev"
 
 # EKS
-eks_cluster_version        = "1.27"
+eks_cluster_version        = "1.35"
 eks_node_instance_types    = ["t3.medium"]
 eks_endpoint_public_access = true
 
 # RDS
 rds_instance_class    = "db.t3.micro"
-rds_allocated_storage = 20
+rds_allocated_storage = 30
 
 # Tags
 data_classification = "internal"
