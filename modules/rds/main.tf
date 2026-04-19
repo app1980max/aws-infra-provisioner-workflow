@@ -5,8 +5,8 @@ resource "random_password" "db_password" {
 }
 
 resource "aws_secretsmanager_secret" "db_password" {
-  name = "${var.project_name}-${var.environment}-db-password"
-  
+  name_prefix = "${var.project_name}-${var.environment}-db-password-"
+
   tags = var.tags
 }
 
@@ -205,7 +205,7 @@ resource "random_password" "redis_auth_token" {
 }
 
 resource "aws_secretsmanager_secret" "redis_auth_token" {
-  name = "${var.project_name}-${var.environment}-redis-auth-token"
+  name_prefix = "${var.project_name}-${var.environment}-redis-auth-token-"
 
   tags = var.tags
 }
