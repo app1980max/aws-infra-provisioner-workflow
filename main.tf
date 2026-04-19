@@ -27,7 +27,7 @@ module "vpc" {
   availability_zones = var.availability_zones
   
   tags = local.common_tags
-  depends_on = [module.kms]
+
 }
 
 module "rds" {
@@ -101,7 +101,6 @@ module "alb" {
 
   tags = local.common_tags
   depends_on = [
-    module.vpc,
     module.eks
   ]
 }
