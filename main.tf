@@ -27,11 +27,37 @@ module "vpc" {
   availability_zones = var.availability_zones
   
   tags = local.common_tags
+  depends_on = [module.kms]
+}
+
+module "rds" {
+  source = "./modules/rds"
+
+  project_name       = var.project_name
+  environment        = var.environment
+
+  instance_class     = var.rds_instance_class
+  allocated_storage  = var.rds_allocated_storage
+  db_name            = var.db_name
+  db_username        = var.db_username
+
+  backup_retention_period = var.environment == "prod" ? 30 : 7
+  multi_az                = var.environment == "prod" ? true : false
+
+  vpc_id          = module.vpc.vpc_id
+  private_subnets = module.vpc.private_subnets
+  kms_key_arn     = module.kms.rds_kms_key_arn
+
+  tags = local.common_tags
+  depends_on = [
+    module.vpc,
+    module.kms
+  ]
 }
 
 module "eks" {
   source = "./modules/eks"
-
+  
   project_name      = var.project_name
   environment      = var.environment
   cluster_version  = var.eks_cluster_version
@@ -57,27 +83,10 @@ module "eks" {
   }
 
   tags = local.common_tags
-}
-
-module "rds" {
-  source = "./modules/rds"
-
-  project_name       = var.project_name
-  environment        = var.environment
-
-  instance_class     = var.rds_instance_class
-  allocated_storage  = var.rds_allocated_storage
-  db_name            = var.db_name
-  db_username        = var.db_username
-
-  backup_retention_period = var.environment == "prod" ? 30 : 7
-  multi_az                = var.environment == "prod" ? true : false
-
-  vpc_id          = module.vpc.vpc_id
-  private_subnets = module.vpc.private_subnets
-  kms_key_arn     = module.kms.rds_kms_key_arn
-
-  tags = local.common_tags
+  depends_on = [
+    module.vpc,
+    module.kms
+  ]
 }
 
 module "alb" {
@@ -91,5 +100,9 @@ module "alb" {
   certificate_arn = var.certificate_arn
 
   tags = local.common_tags
+  depends_on = [
+    module.vpc,
+    module.eks
+  ]
 }
 
